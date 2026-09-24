@@ -24,6 +24,7 @@ jobs:
           printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
           printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+          echo "Huella de la clave:" && ssh-keygen -lf ~/.ssh/id_deploy
 
       # Copia el repo al VPS. certbot/ (certificados) y .git no se tocan.
       - name: Subir archivos
@@ -33,6 +34,7 @@ jobs:
           PORT: ${{ secrets.VPS_PORT || '22' }}
           TARGET: ${{ secrets.VPS_PATH }}
         run: |
+          HOST=$(echo "$HOST" | tr -d '[:space:]'); USER=$(echo "$USER" | tr -d '[:space:]'); TARGET=$(echo "$TARGET" | tr -d '[:space:]')
           rsync -avz --delete \
             --exclude='.git/' --exclude='.github/' --exclude='certbot/' --exclude='.DS_Store' \
             -e "ssh -i ~/.ssh/id_deploy -p $PORT" \
@@ -46,6 +48,7 @@ jobs:
           PORT: ${{ secrets.VPS_PORT || '22' }}
           TARGET: ${{ secrets.VPS_PATH }}
         run: |
+          HOST=$(echo "$HOST" | tr -d '[:space:]'); USER=$(echo "$USER" | tr -d '[:space:]'); TARGET=$(echo "$TARGET" | tr -d '[:space:]')
           ssh -i ~/.ssh/id_deploy -p "$PORT" "$USER@$HOST" "
             set -e
             cd '$TARGET'

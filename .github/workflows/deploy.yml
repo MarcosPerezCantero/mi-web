@@ -30,6 +30,18 @@ jobs:
           fi
           ssh-keygen -y -f ~/.ssh/id_deploy > /dev/null || { echo "::error::La clave privada no es válida o tiene contraseña"; exit 1; }
 
+      # Aborta si VPS_PATH no es la carpeta real de la web (debe tener docker-compose.yml y los certificados).
+      - name: Comprobar carpeta destino
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+          PORT: ${{ secrets.VPS_PORT || '22' }}
+          TARGET: ${{ secrets.VPS_PATH }}
+        run: |
+          HOST=$(echo "$HOST" | tr -d '[:space:]'); USER=$(echo "$USER" | tr -d '[:space:]'); TARGET=$(echo "$TARGET" | tr -d '[:space:]')
+          ssh -i ~/.ssh/id_deploy -p "$PORT" "$USER@$HOST" "test -f '$TARGET/docker-compose.yml' && test -d '$TARGET/certbot/conf/live'" \
+            || { echo "::error::VPS_PATH no apunta a la carpeta de la web (falta docker-compose.yml o certbot/conf/live)"; exit 1; }
+
       # Copia el repo al VPS. certbot/ (certificados) y .git no se tocan.
       - name: Subir archivos
         env:

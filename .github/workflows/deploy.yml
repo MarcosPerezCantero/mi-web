@@ -24,7 +24,11 @@ jobs:
           printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
           printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
-          echo "Huella de la clave:" && ssh-keygen -lf ~/.ssh/id_deploy
+          if ! grep -q "PRIVATE KEY-----" ~/.ssh/id_deploy; then
+            echo "::error::VPS_SSH_KEY no contiene una clave PRIVADA (debe empezar por -----BEGIN ... PRIVATE KEY-----)"
+            exit 1
+          fi
+          ssh-keygen -y -f ~/.ssh/id_deploy > /dev/null || { echo "::error::La clave privada no es válida o tiene contraseña"; exit 1; }
 
       # Copia el repo al VPS. certbot/ (certificados) y .git no se tocan.
       - name: Subir archivos

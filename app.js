@@ -20,17 +20,6 @@ navLinks.forEach(link => {
   });
 });
 
-// In-page links to another panel (e.g. portfolio card → Infrastructure)
-document.querySelectorAll('[data-goto]').forEach(el => {
-  el.addEventListener('click', (e) => {
-    e.preventDefault();
-    const link = document.querySelector(`.nav-link[data-target="${el.dataset.goto}"]`);
-    if (link) link.click();
-    history.replaceState(null, '', `#${el.dataset.goto}`);
-    document.querySelector('.content').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
-
 // If URL has hash, open that panel on load
 window.addEventListener('DOMContentLoaded', () => {
   const hash = window.location.hash.replace('#', '');

@@ -418,68 +418,6 @@
           <div class="stack"></div>
         </div>
 
-        <h3 class="section-title">Deployment Pipeline</h3>
-        <p class="intro">
-          Triggered on every push to <code>main</code>. The pipeline is defensive: it validates
-          everything it can <em>before</em> touching production.
-        </p>
-
-        <div class="timeline">
-          <div class="timeline-item">
-            <h4>Prepare SSH</h4>
-            <span class="meta">Step 1</span>
-            <p>Loads a dedicated deploy key and the server's pinned host key from encrypted secrets. Fails fast if the key isn't a usable private key.</p>
-          </div>
-          <div class="timeline-item">
-            <h4>Guard the target</h4>
-            <span class="meta">Step 2</span>
-            <p>Verifies the destination really is the live project (compose file and certificates present). If not, the deploy aborts without changing anything.</p>
-          </div>
-          <div class="timeline-item">
-            <h4>Sync files</h4>
-            <span class="meta">Step 3</span>
-            <p><code>rsync</code> over SSH mirrors the repository to the server, explicitly excluding TLS material so certificates are never overwritten or exposed.</p>
-          </div>
-          <div class="timeline-item">
-            <h4>Rebuild &amp; reload</h4>
-            <span class="meta">Step 4</span>
-            <p><code>docker compose up --build</code> bakes the new content into a fresh image, recreates the containers, reloads nginx and prunes old images.</p>
-          </div>
-        </div>
-
-        <h3 class="section-title">Stack</h3>
-
-        <div class="stack-group">
-          <span class="stack-label">Runtime</span>
-          <div class="stack">
-            <span>OVH VPS · Ubuntu</span>
-            <span>Docker Compose</span>
-            <span>Nginx reverse proxy</span>
-            <span>nginx:alpine</span>
-            <span>Let's Encrypt · Certbot</span>
-          </div>
-        </div>
-
-        <div class="stack-group">
-          <span class="stack-label">Delivery</span>
-          <div class="stack">
-            <span>Git · GitHub</span>
-            <span>GitHub Actions</span>
-            <span>rsync over SSH</span>
-            <span>GitHub Secrets</span>
-          </div>
-        </div>
-
-        <div class="stack-group">
-          <span class="stack-label">Frontend</span>
-          <div class="stack">
-            <span>HTML</span>
-            <span>CSS</span>
-            <span>Vanilla JS</span>
-            <span>No frameworks · No trackers</span>
-          </div>
-        </div>
-
         <h3 class="section-title">Security Decisions</h3>
 
         <div class="cards-grid">
@@ -522,26 +460,6 @@
               <p>Only the proxy is exposed; the app container is internal-only. HTTP is redirected to HTTPS and the image contains nothing but the site.</p>
             </div>
           </div>
-        </div>
-
-        <h3 class="section-title">Postmortem</h3>
-
-        <div class="incident">
-          <div class="incident-head">
-            <span class="incident-badge">Resolved</span>
-            <h4>~3-minute outage on the first automated deploy</h4>
-            <span class="meta">Sep 2026 · Severity: low · Personal site</span>
-          </div>
-          <dl>
-            <dt>Impact</dt>
-            <dd>The proxy entered a restart loop and the site was unreachable for about three minutes.</dd>
-            <dt>Root cause</dt>
-            <dd>A stray character in the deploy-path secret made the pipeline sync to a new directory. Compose recreated the production containers from there, mounting an empty certificate folder, so nginx couldn't load TLS.</dd>
-            <dt>Resolution</dt>
-            <dd>Containers restarted from the correct directory, then the secret was fixed.</dd>
-            <dt>Prevention</dt>
-            <dd>Added a guard step that verifies the target is the live project before syncing anything, plus input sanitisation for all connection secrets. A bad path now fails the pipeline instead of the site.</dd>
-          </dl>
         </div>
       </article>
 

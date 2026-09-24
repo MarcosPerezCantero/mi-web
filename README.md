@@ -83,9 +83,9 @@ En ~15 s el cambio está en producción. El estado se ve en la pestaña **Action
 ## Certificados HTTPS
 
 - Let's Encrypt, método webroot (`/var/www/certbot`), para `marcosperez.es` y `www.marcosperez.es`.
-- Caducan cada 90 días. **La renovación no está automatizada todavía.**
+- Validez de 90 días.
 
-Renovar a mano (en el VPS):
+Renovación (en el VPS):
 
 ```bash
 cd <ruta-del-proyecto>
@@ -99,7 +99,7 @@ Comprobar la fecha de caducidad desde cualquier sitio:
 echo | openssl s_client -connect marcosperez.es:443 -servername marcosperez.es 2>/dev/null | openssl x509 -noout -dates
 ```
 
-## Si algo falla
+## Operación y recuperación
 
 **El despliegue sale en rojo**: abrir el run en *Actions* (o `gh run view --log-failed`). Los errores de SSH o de carpeta destino se detectan antes de tocar el servidor.
 
@@ -134,9 +134,3 @@ docker run --rm -p 8080:80 mi-web
 ```
 
 (El `docker-compose.yml` completo necesita los certificados de `certbot/`, que solo existen en el servidor.)
-
-## Pendiente
-
-- Automatizar la renovación de certificados.
-- Ramas + Pull Requests con comprobaciones (validar HTML/enlaces) y proteger `main`.
-- Aviso si la web deja de responder.

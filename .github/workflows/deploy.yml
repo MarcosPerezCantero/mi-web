@@ -15,6 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Datos que muestra la pestaña Infrastructure (commit, fecha de despliegue, caducidad del certificado).
+      - name: Generar build-info.json
+        run: |
+          EXP=$(echo | openssl s_client -connect marcosperez.es:443 -servername marcosperez.es 2>/dev/null \
+                | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+          TLS=$( [ -n "$EXP" ] && date -u -d "$EXP" +%Y-%m-%dT%H:%M:%SZ || echo "" )
+          jq -n \
+            --arg commit "${GITHUB_SHA::7}" \
+            --arg deployed_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg run_url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --arg tls_expires "$TLS" \
+            '{commit: $commit, deployed_at: $deployed_at, run_url: $run_url, tls_expires: $tls_expires}' \
+            > build-info.json
+          cat build-info.json
+
       - name: Configurar SSH
         env:
           SSH_KEY: ${{ secrets.VPS_SSH_KEY }}

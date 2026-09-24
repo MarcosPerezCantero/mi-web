@@ -3,3 +3,7 @@ Dockerfile
 .git
 .gitignore
 *.md
+certbot/
+nginx/
+docker-compose.yml
+README.md

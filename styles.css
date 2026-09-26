@@ -125,6 +125,30 @@ a { color: inherit; text-decoration: none; }
 }
 .contact a:hover { color: var(--accent); }
 
+.cv-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 11px 16px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 10px;
+  transition: background .2s, transform .2s;
+}
+.cv-btn:hover {
+  background: var(--accent-soft);
+  transform: translateY(-2px);
+}
+.cv-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 .socials {
   display: flex;
   justify-content: center;
@@ -343,11 +367,34 @@ a { color: inherit; text-decoration: none; }
   color: var(--text-muted);
   line-height: 1.6;
 }
+.timeline-item ul {
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.timeline-item li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.timeline-item li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.72em;
+  width: 6px; height: 1px;
+  background: var(--accent);
+}
+.timeline-item strong, .intro strong {
+  color: var(--text-soft);
+  font-weight: 600;
+}
 
 /* PORTFOLIO */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 18px;
 }
 .project-card {

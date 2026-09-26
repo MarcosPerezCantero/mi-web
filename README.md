@@ -83,14 +83,17 @@ En ~15 s el cambio está en producción. El estado se ve en la pestaña **Action
 ## Certificados HTTPS
 
 - Let's Encrypt, método webroot (`/var/www/certbot`), para `marcosperez.es` y `www.marcosperez.es`.
-- Validez de 90 días.
+- Validez de 90 días, **renovación automática** con cron en el VPS (dos veces al día). Certbot solo renueva cuando faltan menos de 30 días; después se recarga nginx:
 
-Renovación (en el VPS):
+```cron
+0 3,15 * * * cd <ruta-del-proyecto> && docker compose run --rm certbot renew --quiet && docker compose exec -T nginx nginx -s reload
+```
+
+Comprobar que la renovación funciona sin tocar el certificado real:
 
 ```bash
 cd <ruta-del-proyecto>
-docker compose run --rm certbot renew
-docker compose exec nginx nginx -s reload
+docker compose run --rm certbot renew --dry-run
 ```
 
 Comprobar la fecha de caducidad desde cualquier sitio:

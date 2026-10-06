@@ -15,9 +15,20 @@ services:
     restart: unless-stopped
     depends_on:
       - web
+    # default: llega a "web" (marcosperez.es).
+    # sitesonar_proxy: red del proyecto SiteSonar (~/site_sonar), para llegar a
+    # sitesonar-web y sitesonar-panel (ver nginx/conf.d/sitesonar.conf y panel.conf).
+    networks:
+      - default
+      - sitesonar_proxy
 
   certbot:
     image: certbot/certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+
+networks:
+  # La crea "docker compose up" en ~/site_sonar; aquí solo nos unimos a ella.
+  sitesonar_proxy:
+    external: true

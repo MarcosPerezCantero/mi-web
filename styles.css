@@ -428,11 +428,19 @@ a { color: inherit; text-decoration: none; }
   border-color: rgba(255, 182, 72, 0.4);
 }
 .project-thumb {
-  height: 140px;
-  display: grid; place-items: center;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
   background: linear-gradient(135deg, var(--bg), var(--panel-2));
   color: var(--accent);
 }
+.project-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+.project-card:hover .project-thumb img { transform: scale(1.05); }
 .project-card.placeholder .project-thumb { color: var(--text-muted); }
 .project-info {
   padding: 16px 18px;
